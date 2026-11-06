@@ -7,7 +7,7 @@ Il remplace l'ancien portfolio hébergé sur WordPress.com.
 
 ```
 index.html      Accueil : profil, compétences, expériences, projets, formations, contact
-parcours.html   Travaux du BTS SIO : dossier E6, TP, PPE, missions en entreprise
+parcours.html   Travaux du BTS SIO : matières, dossier E6, TP, PPE, missions et fiches de poste (SOSIM, Rougeot)
 veille.html     Veille technologique et juridique
 base.css        Reset et fondations
 style.css       Jetons de design (couleurs, typographie, espacements) et composants
@@ -24,6 +24,17 @@ assets/docs/    PDF (CV, cahiers des charges, comptes rendus)
 3. Modifier les fichiers HTML/CSS, recharger la page.
 
 Les couleurs et les polices se changent dans les variables `:root` de `style.css`.
+
+## Formulaire de contact (Formspree)
+
+Le formulaire de `index.html` envoie les messages via [Formspree](https://formspree.io) (offre gratuite).
+
+1. Créer un compte Formspree puis un nouveau formulaire : Formspree fournit une adresse du type `https://formspree.io/f/abcdwxyz`.
+2. Dans `index.html`, remplacer `VOTRE_ID_FORMSPREE` dans l'attribut `action` du formulaire par cet identifiant.
+3. Publier. Les messages arrivent sur l'adresse e-mail du compte Formspree.
+
+Le champ `_gotcha` est un piège anti-spam : il reste invisible et vide pour un humain.
+Si l'envoi échoue, la page invite à écrire directement par e-mail.
 
 ## Publier gratuitement sur GitHub Pages
 

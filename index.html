@@ -396,6 +396,29 @@
               <a href="https://www.linkedin.com/in/benjamin-bruat-48789430a" target="_blank" rel="noopener noreferrer">LinkedIn — benjamin-bruat</a>
               <span>Besançon, Bourgogne-Franche-Comté · Titulaire du permis B</span>
             </div>
+
+            <!-- Formulaire Formspree : remplacer VOTRE_ID_FORMSPREE par l'identifiant du formulaire (https://formspree.io) -->
+            <form class="form" id="contact-form" action="https://formspree.io/f/VOTRE_ID_FORMSPREE" method="POST">
+              <p class="mono">Ou par formulaire</p>
+              <div class="field">
+                <label for="cf-name">Nom</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="cf-email">Adresse e-mail</label>
+                <input id="cf-email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="cf-message">Message</label>
+                <textarea id="cf-message" name="message" rows="5" required></textarea>
+              </div>
+              <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <input type="hidden" name="_subject" value="Message depuis le portfolio" />
+              <div class="form__actions">
+                <button class="btn" type="submit">Envoyer le message</button>
+                <p class="form__status" role="status" aria-live="polite"></p>
+              </div>
+            </form>
           </div>
         </div>
       </div>
