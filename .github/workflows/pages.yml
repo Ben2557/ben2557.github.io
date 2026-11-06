@@ -1,0 +1,68 @@
+name: Publier le portfolio et sa prévisualisation
+on:
+  push:
+    branches: [main, perplexity]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: portfolio-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le site principal
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: production
+          persist-credentials: false
+      - name: Récupérer la prévisualisation
+        uses: actions/checkout@v6
+        with:
+          ref: perplexity
+          path: preview
+          persist-credentials: false
+      - name: Assembler les deux versions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          def export(source, destination):
+              source, destination = Path(source), Path(destination)
+              destination.mkdir(parents=True, exist_ok=True)
+              for item in source.iterdir():
+                  if item.is_file() and (item.suffix.lower() in {'.html', '.css', '.js', '.ico', '.svg', '.webmanifest'} or item.name in {'CNAME', 'robots.txt', 'sitemap.xml', '.nojekyll'}):
+                      shutil.copy2(item, destination / item.name)
+              shutil.copytree(source / 'assets', destination / 'assets')
+              if not (destination / 'index.html').is_file():
+                  raise RuntimeError(f'Page accueil manquante : {source}')
+          export('production', 'public')
+          export('preview', 'public/perplexity')
+          for name in ('CNAME', 'robots.txt', 'sitemap.xml'):
+              (Path('public/perplexity') / name).unlink(missing_ok=True)
+          for path in Path('public/perplexity').rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('</head>', '<meta name="robots" content="noindex, nofollow" />\n</head>')
+              path.write_text(text, encoding='utf-8')
+          Path('public/.nojekyll').touch()
+          PY
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+      - name: Charger le site assemblé
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publier les deux versions
+        id: deployment
+        uses: actions/deploy-pages@v4
