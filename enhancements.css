@@ -1,0 +1,91 @@
+/* Shared refinements; html specificity keeps overrides independent of load order. */
+html:root { --color-text-faint: #646970; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html .site-header__inner > *,
+html .split > *,
+html .hero__grid > *,
+html .hero__aside > *,
+html .watch a > * { min-width: 0; }
+html .doc-link { overflow-wrap: anywhere; }
+html .watch .src { overflow-wrap: anywhere; }
+html .skip-link { position: fixed; }
+html .panel :focus-visible,
+html .site-footer :focus-visible { outline-color: var(--color-panel-accent); }
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  html .brand small { display: none; }
+  html .nav-toggle { display: inline-flex; }
+  html .nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-3) var(--gutter) var(--space-5);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-divider);
+    box-shadow: var(--shadow-md);
+  }
+  html .nav.is-open { display: flex; }
+  html .nav a { padding: var(--space-3); font-size: var(--text-base); }
+  html .nav a.nav__cta { margin-left: 0; margin-top: var(--space-2); text-align: center; }
+}
+
+@media (max-width: 1180px) {
+  html .nav { max-height: calc(100dvh - 72px); overflow-y: auto; }
+  html:not(.has-js) .site-header { position: relative; }
+  html:not(.has-js) .site-header__inner { flex-wrap: wrap; padding-block: var(--space-3); }
+  html:not(.has-js) .nav-toggle { display: none; }
+  html:not(.has-js) .nav {
+    display: flex;
+    position: static;
+    width: 100%;
+    max-height: none;
+    box-shadow: none;
+    padding: 0;
+    border: 0;
+  }
+}
+
+@media (min-width: 880px) and (max-width: 1180px) {
+  html .watch a { grid-template-columns: minmax(0, 1fr); }
+  html .skills > div { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 1000px) {
+  html .tp-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 420px) {
+  html .hero__aside { grid-template-columns: minmax(0, 1fr); }
+  html .spec { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  html .spec dd { margin-bottom: var(--space-3); }
+  html .hero__actions .btn { width: 100%; justify-content: center; }
+  html .links-list a { flex-wrap: wrap; }
+}
+
+@media print {
+  @page { margin: 16mm; }
+  html:root {
+    --color-bg: #fff;
+    --color-surface: #fff;
+    --color-surface-offset: #fff;
+    --color-text: #000;
+    --color-text-muted: #333;
+    --color-text-faint: #444;
+    --color-panel: #fff;
+    --color-panel-text: #000;
+    --color-panel-muted: #333;
+    --color-panel-border: #bbb;
+  }
+  html { font-size: 10pt; }
+  html .site-header, html .site-footer, html .skip-link, html .hero__actions { display: none; }
+  html .container, html .container--default { width: 100%; max-width: none; }
+  html .section, html .hero, html .page-head { padding-block: 14pt; }
+  html .panel, html .panel .section-head h2, html .skills dt { background: #fff; color: #000; }
+  html .panel .section-head p, html .panel .mono, html .skills dd li { color: #333; }
+  html .project, html .card, html .figure { box-shadow: none; break-inside: avoid; }
+  html .sticky { position: static; }
+  html .hero__portrait { width: 100px; box-shadow: none; }
+  html a { color: #000; }
+}

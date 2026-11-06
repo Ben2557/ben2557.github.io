@@ -1,3 +1,5 @@
+@import url('./enhancements.css');
+
 /* base.css — reset et fondations */
 *,
 *::before,
@@ -8,9 +10,6 @@
 }
 
 html {
-  -moz-text-size-adjust: none;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -27,44 +26,16 @@ body {
   background-color: var(--color-bg);
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
+img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-ul[role='list'],
-ol[role='list'] {
-  list-style: none;
-}
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  text-wrap: balance;
-  line-height: 1.15;
-}
-
-p,
-li,
-figcaption,
-dd {
-  text-wrap: pretty;
-  max-width: 68ch;
-}
+ul[role='list'], ol[role='list'] { list-style: none; }
+input, button, textarea, select { font: inherit; color: inherit; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.15; }
+p, li, figcaption, dd { text-wrap: pretty; max-width: 68ch; }
 
 ::selection {
   background: color-mix(in oklab, var(--color-primary) 25%, transparent);
@@ -78,9 +49,7 @@ dd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -88,26 +57,11 @@ dd {
   }
 }
 
-button {
-  cursor: pointer;
-  background: none;
-  border: none;
+button { cursor: pointer; background: none; border: none; }
+table { border-collapse: collapse; width: 100%; }
+a, button {
+  transition: color var(--transition-interactive), background var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-a,
-button {
-  transition:
-    color var(--transition-interactive),
-    background var(--transition-interactive),
-    border-color var(--transition-interactive),
-    box-shadow var(--transition-interactive);
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
