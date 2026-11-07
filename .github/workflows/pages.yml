@@ -1,7 +1,7 @@
 name: Publier le portfolio et sa prévisualisation
 on:
   push:
-    branches: [main, perplexity]
+    branches: [main, perplexity, claude]
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,7 +26,13 @@ jobs:
           ref: perplexity
           path: preview
           persist-credentials: false
-      - name: Assembler les deux versions
+      - name: Récupérer la prévisualisation claude
+        uses: actions/checkout@v6
+        with:
+          ref: claude
+          path: preview_claude
+          persist-credentials: false
+      - name: Assembler les versions
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -42,12 +48,14 @@ jobs:
                   raise RuntimeError(f'Page accueil manquante : {source}')
           export('production', 'public')
           export('preview', 'public/perplexity')
-          for name in ('CNAME', 'robots.txt', 'sitemap.xml'):
-              (Path('public/perplexity') / name).unlink(missing_ok=True)
-          for path in Path('public/perplexity').rglob('*.html'):
-              text = path.read_text(encoding='utf-8')
-              text = text.replace('</head>', '<meta name="robots" content="noindex, nofollow" />\n</head>')
-              path.write_text(text, encoding='utf-8')
+          export('preview_claude', 'public/claude')
+          for folder in ('public/perplexity', 'public/claude'):
+              for name in ('CNAME', 'robots.txt', 'sitemap.xml'):
+                  (Path(folder) / name).unlink(missing_ok=True)
+              for path in Path(folder).rglob('*.html'):
+                  text = path.read_text(encoding='utf-8')
+                  text = text.replace('</head>', '<meta name="robots" content="noindex, nofollow" />\n</head>')
+                  path.write_text(text, encoding='utf-8')
           Path('public/.nojekyll').touch()
           PY
       - name: Configurer Pages
