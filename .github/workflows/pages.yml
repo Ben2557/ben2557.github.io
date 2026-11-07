@@ -1,67 +1,76 @@
-# Publication du site sur GitHub Pages
-#   - la branche main est servie à la racine : https://ben2557.github.io/
-#   - la branche claude est servie en préversion : https://ben2557.github.io/claude/
-#
-# Prérequis (une seule fois, dans les réglages du dépôt) :
-#   1. Settings > Pages > Source : « GitHub Actions »
-#   2. Settings > Environments > github-pages > Deployment branches :
-#      autoriser aussi la branche « claude » (et « main »)
-#
-# Quand la branche claude sera fusionnée puis supprimée, retirer l'étape
-# « Récupérer claude » et l'étape « Préversion non indexée » ci-dessous.
-
-name: Publier le site
-
+name: Publier le portfolio et sa prévisualisation
 on:
   push:
-    branches: [main, claude]
+    branches: [main, perplexity, claude]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
-# Un seul déploiement à la fois, sans interrompre celui en cours
 concurrency:
-  group: pages
+  group: portfolio-pages
   cancel-in-progress: false
-
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le site principal
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: production
+          persist-credentials: false
+      - name: Récupérer la prévisualisation
+        uses: actions/checkout@v6
+        with:
+          ref: perplexity
+          path: preview
+          persist-credentials: false
+      - name: Récupérer la prévisualisation claude
+        uses: actions/checkout@v6
+        with:
+          ref: claude
+          path: preview_claude
+          persist-credentials: false
+      - name: Assembler les versions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          def export(source, destination):
+              source, destination = Path(source), Path(destination)
+              destination.mkdir(parents=True, exist_ok=True)
+              for item in source.iterdir():
+                  if item.is_file() and (item.suffix.lower() in {'.html', '.css', '.js', '.ico', '.svg', '.webmanifest'} or item.name in {'CNAME', 'robots.txt', 'sitemap.xml', '.nojekyll'}):
+                      shutil.copy2(item, destination / item.name)
+              shutil.copytree(source / 'assets', destination / 'assets')
+              if not (destination / 'index.html').is_file():
+                  raise RuntimeError(f'Page accueil manquante : {source}')
+          export('production', 'public')
+          export('preview', 'public/perplexity')
+          export('preview_claude', 'public/claude')
+          for folder in ('public/perplexity', 'public/claude'):
+              for name in ('CNAME', 'robots.txt', 'sitemap.xml'):
+                  (Path(folder) / name).unlink(missing_ok=True)
+              for path in Path(folder).rglob('*.html'):
+                  text = path.read_text(encoding='utf-8')
+                  text = text.replace('</head>', '<meta name="robots" content="noindex, nofollow" />\n</head>')
+                  path.write_text(text, encoding='utf-8')
+          Path('public/.nojekyll').touch()
+          PY
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+      - name: Charger le site assemblé
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Récupérer main (racine du site)
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: _site
-
-      - name: Récupérer claude (préversion sous /claude/)
-        uses: actions/checkout@v4
-        with:
-          ref: claude
-          path: _site/claude
-
-      - name: Retirer les fichiers qui ne se publient pas
-        run: |
-          rm -rf _site/.git _site/claude/.git _site/.github _site/claude/.github
-
-      - name: Préversion non indexée par les moteurs de recherche
-        run: |
-          find _site/claude -name '*.html' -exec sed -i 's|<head>|<head>\n  <meta name="robots" content="noindex" />|' {} +
-
-      - name: Configurer Pages
-        uses: actions/configure-pages@v5
-
-      - name: Préparer l'artefact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - name: Déployer
+      - name: Publier les deux versions
         id: deployment
         uses: actions/deploy-pages@v4
