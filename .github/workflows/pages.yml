@@ -58,6 +58,12 @@ jobs:
                   path.write_text(text, encoding='utf-8')
           Path('public/.nojekyll').touch()
           PY
+      - name: Vérifier les trois sites avant publication
+        run: |
+          test -s public/index.html
+          test -s public/perplexity/index.html
+          test -s public/claude/index.html
+          du -sh public
       - name: Configurer Pages
         uses: actions/configure-pages@v5
       - name: Charger le site assemblé
@@ -71,6 +77,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Publier les deux versions
+      - name: Publier les trois versions
         id: deployment
         uses: actions/deploy-pages@v4
