@@ -1,0 +1,67 @@
+# Publication du site sur GitHub Pages
+#   - la branche main est servie à la racine : https://ben2557.github.io/
+#   - la branche claude est servie en préversion : https://ben2557.github.io/claude/
+#
+# Prérequis (une seule fois, dans les réglages du dépôt) :
+#   1. Settings > Pages > Source : « GitHub Actions »
+#   2. Settings > Environments > github-pages > Deployment branches :
+#      autoriser aussi la branche « claude » (et « main »)
+#
+# Quand la branche claude sera fusionnée puis supprimée, retirer l'étape
+# « Récupérer claude » et l'étape « Préversion non indexée » ci-dessous.
+
+name: Publier le site
+
+on:
+  push:
+    branches: [main, claude]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois, sans interrompre celui en cours
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Récupérer main (racine du site)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: _site
+
+      - name: Récupérer claude (préversion sous /claude/)
+        uses: actions/checkout@v4
+        with:
+          ref: claude
+          path: _site/claude
+
+      - name: Retirer les fichiers qui ne se publient pas
+        run: |
+          rm -rf _site/.git _site/claude/.git _site/.github _site/claude/.github
+
+      - name: Préversion non indexée par les moteurs de recherche
+        run: |
+          find _site/claude -name '*.html' -exec sed -i 's|<head>|<head>\n  <meta name="robots" content="noindex" />|' {} +
+
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+
+      - name: Préparer l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Déployer
+        id: deployment
+        uses: actions/deploy-pages@v4

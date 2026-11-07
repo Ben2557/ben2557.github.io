@@ -36,6 +36,22 @@ Le formulaire de `index.html` envoie les messages via [Formspree](https://formsp
 Le champ `_gotcha` est un piège anti-spam : il reste invisible et vide pour un humain.
 Si l'envoi échoue, la page invite à écrire directement par e-mail.
 
+## Préversion de la branche `claude`
+
+Le workflow `.github/workflows/pages.yml` publie deux versions du site :
+
+- `main` à la racine : https://ben2557.github.io/
+- `claude` en préversion : https://ben2557.github.io/claude/ (non indexée par les moteurs de recherche)
+
+À configurer une seule fois dans les réglages du dépôt :
+
+1. Settings > Pages > Source : « GitHub Actions ».
+2. Settings > Environments > `github-pages` > Deployment branches : autoriser `main` et `claude`.
+
+Chaque `git push` sur `main` ou `claude` redéploie les deux versions.
+Après la fusion de `claude` dans `main` et la suppression de la branche, retirer
+dans le workflow les étapes « Récupérer claude » et « Préversion non indexée ».
+
 ## Publier gratuitement sur GitHub Pages
 
 1. Créer un dépôt public sur GitHub, par exemple `Ben2557/portfolio`
