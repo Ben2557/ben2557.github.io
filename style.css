@@ -1,4 +1,21 @@
-/* JetBrains Mono hébergée en local (licence OFL, voir assets/fonts/) */
+/* Polices hébergées en local (licence OFL, voir assets/fonts/) :
+   Plus Jakarta Sans (titres), Inter (texte), JetBrains Mono (étiquettes) */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('./assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./assets/fonts/inter-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
@@ -23,8 +40,8 @@
 
 :root {
   /* Typographie */
-  --font-display: 'Cabinet Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Satoshi', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
@@ -158,6 +175,7 @@
   font-weight: 800;
   font-size: var(--text-lg);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .brand small {
   font-family: var(--font-mono);
@@ -180,6 +198,7 @@
   font-size: var(--text-sm);
   font-weight: 500;
   border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 .nav a:hover,
 .nav a[aria-current='page'] {
@@ -210,10 +229,13 @@
   color: var(--color-text);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1280px) {
   .brand small {
     display: none;
   }
+}
+
+@media (max-width: 1040px) {
   .nav-toggle {
     display: inline-flex;
   }

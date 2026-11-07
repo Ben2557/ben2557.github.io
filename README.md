@@ -29,6 +29,8 @@ Les couleurs et les polices se changent dans les variables `:root` de `style.css
 
 Le formulaire de `index.html` envoie les messages via [Formspree](https://formspree.io) (offre gratuite).
 
+**État actuel : le formulaire est désactivé** (mis en commentaire dans `index.html`) tant qu'il n'y a pas d'identifiant Formspree. Une fois l'identifiant obtenu, remplacer `VOTRE_ID_FORMSPREE` puis retirer les marqueurs `<!--` et `-->` autour du bloc.
+
 1. Créer un compte Formspree puis un nouveau formulaire : Formspree fournit une adresse du type `https://formspree.io/f/abcdwxyz`.
 2. Dans `index.html`, remplacer `VOTRE_ID_FORMSPREE` dans l'attribut `action` du formulaire par cet identifiant.
 3. Publier. Les messages arrivent sur l'adresse e-mail du compte Formspree.

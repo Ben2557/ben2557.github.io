@@ -16,8 +16,8 @@
   <meta property="og:image:alt" content="Portrait de Benjamin Bruat" />
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="./assets/img/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+  <link rel="preload" href="./assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="./assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="./base.css" />
   <link rel="stylesheet" href="./style.css" />
   <script type="application/ld+json">
@@ -28,7 +28,6 @@
     "jobTitle": "Ingénieur Systèmes et Réseaux",
     "worksFor": { "@type": "Organization", "name": "Bonnet" },
     "email": "mailto:benjamin.bruat@live.fr",
-    "telephone": "+33772223921",
     "address": { "@type": "PostalAddress", "addressLocality": "Besançon", "addressCountry": "FR" },
     "sameAs": ["https://www.linkedin.com/in/benjamin-bruat-48789430a", "https://github.com/Ben2557"]
   }
@@ -291,6 +290,45 @@
     </section>
 
     <!-- Objectifs -->
+    <!-- Projets personnels -->
+    <section class="section section--tight" id="projets-perso">
+      <div class="container">
+        <p class="mono">Projets personnels</p>
+        <div class="section-head" style="margin-top: var(--space-3)">
+          <h2>Android bas niveau : noyau, ROM et un outil Windows</h2>
+          <p>Trois dépôts publiés sur GitHub, développés sur mon temps libre. Les deux projets Android visent le même appareil, le Galaxy S23+.</p>
+        </div>
+        <div class="projects">
+          <article class="project">
+            <div class="project__body">
+              <h3>Noyau Linux personnalisé pour le Galaxy S23+</h3>
+              <p>Noyau GKI 2.0 (Linux 5.15) pour le Galaxy S23+ (Snapdragon 8 Gen 2, One UI 5.1), construit à partir des sources Samsung. Il n'embarque aucun gestionnaire de root : le chargement de modules est activé et les protections Samsung (RKP, UH, DEFEX, PROCA…) sont désactivées pour permettre d'en ajouter un séparément. Un script de build (Thin LTO, menuconfig) produit le boot.img et une archive Odin. Projet expérimental : la compatibilité hors du firmware ciblé n'est pas garantie.</p>
+              <ul class="tags" role="list"><li>Noyau Linux 5.15</li><li>GKI 2.0</li><li>Thin LTO</li><li>Snapdragon SM8550</li><li>Odin</li></ul>
+              <p><a class="link" href="https://github.com/Ben2557/android_kernel_samsung_sm8550_dm2q" target="_blank" rel="noopener noreferrer">Voir le dépôt sur GitHub</a></p>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__body">
+              <h3>Chaîne de build d'une ROM One UI personnalisée</h3>
+              <p>Système de build de ROM pour le Galaxy S23+, dérivé du projet UN1CA de salvogiangri. Il télécharge et extrait le firmware Samsung, applique les correctifs (retrait des applications inutiles, Play Integrity Fix, KnoxPatch, mods One UI) et génère un paquet flashable. Projet en cours de développement.</p>
+              <ul class="tags" role="list"><li>Scripts shell</li><li>One UI</li><li>apktool</li><li>erofs-utils</li><li>Firmware Samsung</li></ul>
+              <p><a class="link" href="https://github.com/Ben2557/android_OneUI-UN1CA-ROM-Builder" target="_blank" rel="noopener noreferrer">Voir le dépôt sur GitHub</a></p>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project__body">
+              <h3>LogonVistaOrb : l'animation de Windows Vista à l'écran de connexion</h3>
+              <p>Fork de LogonVistaOrb (xxxman360) : application .NET Framework 4.8 qui rejoue l'animation de démarrage de Windows Vista à l'écran de connexion de Windows 10 et ultérieur. L'outil de configuration gère les sons de démarrage, de connexion et d'arrêt, la couleur de fond et l'attente du service audio ; un installateur s'occupe des clés de registre. Licence GPL v3.</p>
+              <ul class="tags" role="list"><li>.NET Framework 4.8</li><li>Windows 10 et ultérieur</li><li>Registre Windows</li><li>GPL v3</li></ul>
+              <p><a class="link" href="https://github.com/Ben2557/LogonVistaOrb" target="_blank" rel="noopener noreferrer">Voir le dépôt sur GitHub</a></p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section section--tight" id="objectifs">
       <div class="container">
         <p class="mono">Les deux prochains chantiers</p>
@@ -395,12 +433,13 @@
           <div>
             <a class="contact__mail" href="mailto:benjamin.bruat@live.fr">benjamin.bruat@live.fr</a>
             <div class="contact__meta">
-              <a href="tel:+33772223921">07 72 22 39 21</a>
               <a href="https://www.linkedin.com/in/benjamin-bruat-48789430a" target="_blank" rel="noopener noreferrer">LinkedIn — benjamin-bruat</a>
               <span>Besançon, Bourgogne-Franche-Comté · Titulaire du permis B</span>
             </div>
 
-            <!-- Formulaire Formspree : remplacer VOTRE_ID_FORMSPREE par l'identifiant du formulaire (https://formspree.io) -->
+            <!-- Formulaire de contact désactivé : aucun identifiant Formspree pour l'instant.
+                 Pour l'activer : créer un formulaire sur https://formspree.io, remplacer VOTRE_ID_FORMSPREE
+                 dans l'attribut action, puis retirer les marqueurs de commentaire autour du bloc (voir README).
             <form class="form" id="contact-form" action="https://formspree.io/f/VOTRE_ID_FORMSPREE" method="POST">
               <p class="mono">Ou par formulaire</p>
               <div class="field">
@@ -422,6 +461,7 @@
                 <p class="form__status" role="status" aria-live="polite"></p>
               </div>
             </form>
+            -->
           </div>
         </div>
       </div>
