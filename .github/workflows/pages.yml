@@ -1,82 +1,59 @@
-name: Publier le portfolio et sa prévisualisation
+name: Publier la version principale
+# Ce workflow ne publie QUE la branche main, à la racine de la branche
+# « gh-pages ». Il ne touche jamais aux dossiers claude/ et perplexity/.
 on:
   push:
-    branches: [main, perplexity, claude]
+    branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 concurrency:
-  group: portfolio-pages
+  group: gh-pages-write
   cancel-in-progress: false
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupérer le site principal
+      - name: Récupérer la branche main
         uses: actions/checkout@v6
         with:
-          ref: main
-          path: production
+          path: src
           persist-credentials: false
-      - name: Récupérer la prévisualisation
-        uses: actions/checkout@v6
-        with:
-          ref: perplexity
-          path: preview
-          persist-credentials: false
-      - name: Récupérer la prévisualisation claude
-        uses: actions/checkout@v6
-        with:
-          ref: claude
-          path: preview_claude
-          persist-credentials: false
-      - name: Assembler les versions
+      - name: Construire la version
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import shutil
-          def export(source, destination):
-              source, destination = Path(source), Path(destination)
-              destination.mkdir(parents=True, exist_ok=True)
-              for item in source.iterdir():
-                  if item.is_file() and (item.suffix.lower() in {'.html', '.css', '.js', '.ico', '.svg', '.webmanifest'} or item.name in {'CNAME', 'robots.txt', 'sitemap.xml', '.nojekyll'}):
-                      shutil.copy2(item, destination / item.name)
-              shutil.copytree(source / 'assets', destination / 'assets')
-              if not (destination / 'index.html').is_file():
-                  raise RuntimeError(f'Page accueil manquante : {source}')
-          export('production', 'public')
-          export('preview', 'public/perplexity')
-          export('preview_claude', 'public/claude')
-          for folder in ('public/perplexity', 'public/claude'):
-              for name in ('CNAME', 'robots.txt', 'sitemap.xml'):
-                  (Path(folder) / name).unlink(missing_ok=True)
-              for path in Path(folder).rglob('*.html'):
-                  text = path.read_text(encoding='utf-8')
-                  text = text.replace('</head>', '<meta name="robots" content="noindex, nofollow" />\n</head>')
-                  path.write_text(text, encoding='utf-8')
-          Path('public/.nojekyll').touch()
+          src, dst = Path('src'), Path('out')
+          dst.mkdir()
+          for item in src.iterdir():
+              if item.is_file() and (item.suffix.lower() in {'.html', '.css', '.js', '.ico', '.svg', '.webmanifest'} or item.name in {'CNAME', 'robots.txt', 'sitemap.xml', '.nojekyll'}):
+                  shutil.copy2(item, dst / item.name)
+          shutil.copytree(src / 'assets', dst / 'assets')
+          if not (dst / 'index.html').is_file():
+              raise RuntimeError('Page accueil manquante')
           PY
-      - name: Vérifier les trois sites avant publication
+      - name: Pousser à la racine de gh-pages
         run: |
-          test -s public/index.html
-          test -s public/perplexity/index.html
-          test -s public/claude/index.html
-          du -sh public
-      - name: Configurer Pages
-        uses: actions/configure-pages@v5
-      - name: Charger le site assemblé
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: public
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Publier les trois versions
-        id: deployment
-        uses: actions/deploy-pages@v4
+          set -e
+          REPO="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads "$REPO" gh-pages >/dev/null 2>&1; then
+            git clone --depth 1 --branch gh-pages "$REPO" site
+          else
+            git init -b gh-pages site
+            git -C site remote add origin "$REPO"
+          fi
+          find site -mindepth 1 -maxdepth 1 ! -name .git ! -name claude ! -name perplexity -exec rm -rf {} +
+          cp -a out/. site/
+          touch site/.nojekyll
+          cd site
+          git add -A
+          if git diff --cached --quiet; then echo "Rien à publier"; exit 0; fi
+          git commit -m "Publier main@${GITHUB_SHA::7}"
+          for i in 1 2 3; do
+            git push origin gh-pages && exit 0
+            git pull --rebase origin gh-pages
+          done
+          exit 1
